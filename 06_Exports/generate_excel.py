@@ -17,10 +17,10 @@ def generate_excel():
         
         # 1. Inputs Sheet
         inputs_data = {
-            'Parameter': ['Gross Margin', 'Discount Rate', 'Price Basic', 'Price Pro', 'Monthly Churn Basic', 'Monthly Churn Pro', 'CAC Target'],
-            'Value': [0.85, 0.10, 29.0, 99.0, 0.05, 0.02, 150.0],
-            'Key': ['gross_margin', 'discount_rate', 'price_basic', 'price_pro', 'monthly_churn_basic', 'monthly_churn_pro', 'cac_target'],
-            'Description': ['Margin after COGS', 'Annual WACC', 'Monthly Basic Price', 'Monthly Pro Price', 'Est. Monthly Churn', 'Est. Monthly Churn', 'Target Cost per Acq']
+            'Parameter': ['Gross Margin', 'Discount Rate', 'Price Basic', 'Price Pro', 'Monthly Churn Basic', 'Monthly Churn Pro', 'CAC Target', 'Activation Rate', 'Conversion Rate'],
+            'Value': [0.85, 0.10, 29.0, 99.0, 0.05, 0.02, 150.0, 0.30, 0.05],
+            'Key': ['gross_margin', 'discount_rate', 'price_basic', 'price_pro', 'monthly_churn_basic', 'monthly_churn_pro', 'cac_target', 'activation_rate', 'conversion_rate'],
+            'Description': ['Margin after COGS', 'Annual WACC', 'Monthly Basic Price', 'Monthly Pro Price', 'Est. Monthly Churn B', 'Est. Monthly Churn P', 'Target Cost per Acq', 'Est. Activation %', 'Est. Trial-to-Paid %']
         }
         pd.DataFrame(inputs_data).to_excel(writer, sheet_name='Inputs', index=False)
         
@@ -38,17 +38,18 @@ def generate_excel():
                                    ["Named Ranges defined: gross_margin, discount_rate, price_basic, price_pro, etc."]])
         readme_txt.to_excel(writer, sheet_name='README', index=False, header=False)
 
-
-        # Define Names (Absolute references to Inputs sheet)
-        # Assuming table starts at A1, Value is Col B (buffer), Key is Col C, but Data is:
-        # A: Parameter, B: Value, C: Key, D: Desc.
-        # So Value B2 is first row.
-        
-        # Map keys to rows (0-indexed in list -> 1-indexed in Excel + header row = +2)
+        # Define Names
         key_map = {k: i+2 for i, k in enumerate(inputs_data['Key'])}
+        name_audit = []
         
         for key, row_idx in key_map.items():
-            workbook.define_name(key, f'=Inputs!$B${row_idx}')
+            cell_ref = f'Inputs!$B${row_idx}'
+            workbook.define_name(key, f'={cell_ref}')
+            name_audit.append({'Name': key, 'RefersTo': cell_ref})
+            
+        # 5. __names__ Sheet (Audit)
+        pd.DataFrame(name_audit).to_excel(writer, sheet_name='__names__', index=False)
+
 
     
     print(f"Saved {OUTPUT_FILE}")
