@@ -9,6 +9,7 @@ INPUT_DIR = "../02_Data_Generation/outputs"
 OUTPUT_DIR = "cleaned"
 LOG_FILE = "cleaning_log.csv"
 PROFILE_FILE = "data_profile_report.csv"
+VERSION = "v1.1"
 
 def ensure_dir(path):
     if not os.path.exists(path):
@@ -178,16 +179,16 @@ def main():
     support = clean_support(users_ids)
     
     # Save Cleaned
-    users.to_csv(os.path.join(OUTPUT_DIR, "users_cleaned.csv"), index=False)
-    subs.to_csv(os.path.join(OUTPUT_DIR, "subscriptions_cleaned.csv"), index=False)
-    events.to_csv(os.path.join(OUTPUT_DIR, "events_cleaned.csv"), index=False)
-    support.to_csv(os.path.join(OUTPUT_DIR, "support_nps_cleaned.csv"), index=False)
+    users.to_csv(os.path.join(OUTPUT_DIR, f"users_cleaned_{VERSION}.csv"), index=False)
+    subs.to_csv(os.path.join(OUTPUT_DIR, f"subscriptions_cleaned_{VERSION}.csv"), index=False)
+    events.to_csv(os.path.join(OUTPUT_DIR, f"events_cleaned_{VERSION}.csv"), index=False)
+    support.to_csv(os.path.join(OUTPUT_DIR, f"support_nps_cleaned_{VERSION}.csv"), index=False)
     
     # Parquet
-    users.to_parquet(os.path.join(OUTPUT_DIR, "users_cleaned.parquet"), index=False)
-    subs.to_parquet(os.path.join(OUTPUT_DIR, "subscriptions_cleaned.parquet"), index=False)
-    events.to_parquet(os.path.join(OUTPUT_DIR, "events_cleaned.parquet"), index=False)
-    support.to_parquet(os.path.join(OUTPUT_DIR, "support_nps_cleaned.parquet"), index=False)
+    users.to_parquet(os.path.join(OUTPUT_DIR, f"users_cleaned_{VERSION}.parquet"), index=False)
+    subs.to_parquet(os.path.join(OUTPUT_DIR, f"subscriptions_cleaned_{VERSION}.parquet"), index=False)
+    events.to_parquet(os.path.join(OUTPUT_DIR, f"events_cleaned_{VERSION}.parquet"), index=False)
+    support.to_parquet(os.path.join(OUTPUT_DIR, f"support_nps_cleaned_{VERSION}.parquet"), index=False)
 
     # Save Log
     log_df = pd.DataFrame(cleaning_stats)

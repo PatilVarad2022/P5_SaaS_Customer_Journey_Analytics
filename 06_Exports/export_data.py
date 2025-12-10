@@ -8,6 +8,7 @@ from datetime import datetime
 DERIVED_DIR = "../04_Derived_Tables"
 EXPORT_DIR = "tableau_ready"
 MANIFEST_FILE = "export_manifest.csv"
+VERSION = "v1.1"
 
 def ensure_dir(path):
     if not os.path.exists(path):
@@ -25,12 +26,15 @@ def export():
     ensure_dir(EXPORT_DIR)
     
     # Mapping Source -> Dest Name
+    # Source has version suffix, Dest is clean
     files_map = {
-        "user_master.parquet": "user_master_cleaned.parquet",
-        "monthly_revenue.parquet": "monthly_revenue.parquet",
-        "monthly_funnel.parquet": "monthly_funnel.parquet",
-        "cohort_retention.parquet": "cohort_retention.parquet",
-        "support_summary.parquet": "support_summary.parquet"
+        f"user_master_{VERSION}.parquet": "user_master.parquet",
+        f"monthly_revenue_{VERSION}.parquet": "monthly_revenue.parquet",
+        f"monthly_funnel_{VERSION}.parquet": "monthly_funnel.parquet",
+        f"cohort_retention_{VERSION}.parquet": "cohort_retention.parquet",
+        f"support_summary_{VERSION}.parquet": "support_summary.parquet",
+        f"user_event_summary_{VERSION}.parquet": "user_event_summary.parquet",
+        f"churn_flags_{VERSION}.parquet": "churn_flags.parquet"
     }
     
     manifest_rows = []
@@ -50,7 +54,8 @@ def export():
                 'file_name': dst_name,
                 'creation_timestamp': datetime.now().isoformat(),
                 'row_count': rows,
-                'md5_checksum': md5_val
+                'md5_checksum': md5_val,
+                'schema_version': VERSION
             })
         else:
             print(f"Warning: Source {src_path} not found.")

@@ -9,8 +9,8 @@ def generate_excel():
     print("Generating CLV Inputs Excel...")
     
     # Load data
-    mrr_df = pd.read_csv(os.path.join(INPUT_DIR, "monthly_revenue.csv"))
-    cohort_df = pd.read_csv(os.path.join(INPUT_DIR, "cohort_retention.csv"))
+    mrr_df = pd.read_csv(os.path.join(INPUT_DIR, "monthly_revenue_v1.1.csv"))
+    cohort_df = pd.read_csv(os.path.join(INPUT_DIR, "cohort_retention_v1.1.csv"))
     
     with pd.ExcelWriter(OUTPUT_FILE, engine='xlsxwriter') as writer:
         workbook = writer.book

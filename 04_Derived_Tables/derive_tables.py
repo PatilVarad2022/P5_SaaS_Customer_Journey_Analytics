@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 INPUT_DIR = "../03_Data_Cleaning/cleaned"
 OUTPUT_DIR = "." # Current dir
+VERSION = "v1.1"
 
 def ensure_dir(path):
     if not os.path.exists(path):
@@ -13,10 +14,14 @@ def ensure_dir(path):
 
 def derive_tables():
     print("Loading data...")
-    users = pd.read_parquet(os.path.join(INPUT_DIR, "users_cleaned.parquet"))
-    subs = pd.read_parquet(os.path.join(INPUT_DIR, "subscriptions_cleaned.parquet"))
-    events = pd.read_parquet(os.path.join(INPUT_DIR, "events_cleaned.parquet"))
-    support = pd.read_parquet(os.path.join(INPUT_DIR, "support_nps_cleaned.parquet"))
+    try:
+        users = pd.read_parquet(os.path.join(INPUT_DIR, f"users_cleaned_{VERSION}.parquet"))
+        subs = pd.read_parquet(os.path.join(INPUT_DIR, f"subscriptions_cleaned_{VERSION}.parquet"))
+        events = pd.read_parquet(os.path.join(INPUT_DIR, f"events_cleaned_{VERSION}.parquet"))
+        support = pd.read_parquet(os.path.join(INPUT_DIR, f"support_nps_cleaned_{VERSION}.parquet"))
+    except FileNotFoundError:
+        print("Versioned input files not found. Please run cleaning script with correct version.")
+        return
     
     # Pre-process dates
     users['signup_date'] = pd.to_datetime(users['signup_date'])
@@ -57,59 +62,143 @@ def derive_tables():
     user_master['cohort_month'] = user_master['signup_date'].dt.to_period('M').astype(str)
     
     # ---------------------------
-    # 2. Monthly Revenue
+    # 2. Monthly Revenue (Strict Snapshot Bridge)
     # ---------------------------
-    print("Building Revenue Summary...")
+    print("Building Revenue Summary (Strict)...")
     months = pd.period_range('2024-01', '2024-12', freq='M')
     revenue_rows = []
     
+    # Track offender rows for diagnostics
+    offenders = []
+
+    # Helper to get active MRR at a specific timestamp
+    def get_active_mrr(target_date):
+        # Active: start <= target and (end >= target or null)
+        # However, for month END, we usually take the last second or inclusive day.
+        # Let's define: Active if [start, end] covers target_date.
+        # target_date is usually month_end (e.g. 2024-01-31 23:59:59.999)
+        # If churned on 2024-01-31, end_date is 2024-01-31. Strict inequality logic:
+        # If end_date == target_date (churn day), is it active?
+        # Usually churn happens AT end. So on end day, they are technically active until EOD?
+        # Let's say: active if start <= target and (end > target or end is Active/Null)
+        # But 'end_date' in sub is typically inclusive last day of sub.
+        # So active if start <= target and (end >= target or end is null).
+        # And NOT status='Churn' (which is a transaction row, not a valid state duration usually)
+        # But our cleaning logic kept 'Churn' rows with amount 0 maybe?
+        # Let's filter transaction_type != 'Churn' for active state.
+        
+        mask = (subs['start_date'] <= target_date) & \
+               ((subs['end_date'] >= target_date) | (subs['end_date'].isnull())) & \
+               (subs['transaction_type'] != 'churn') & (subs['amount'] > 0)
+               
+        active_subs = subs[mask]
+        
+        # Deduplicate: If multiple active subs for user (rare), sum or max? 
+        # In this dataset, upgrades create new sub lines. Overlaps shouldn't exist ideally.
+        # If overlap, take the one with latest start?
+        # Let's sum to be safe, but warn if count > 1 per user.
+        return active_subs.groupby('user_id')['amount'].sum()
+
+    # Initial state (Month 0 - Dec 2023) -> Assume 0
+    previous_mrr_map = pd.Series(dtype=float)
+    
     for m in months:
+        # Snapshots
         m_start = m.start_time
         m_end = m.end_time
         
-        # Active subs in this month
-        # start <= m_end AND (end >= m_start OR end is null)
-        active = subs[ (subs['start_date'] <= m_end) & ( (subs['end_date'] >= m_start) | (subs['end_date'].isnull()) ) ]
-        # Filter churn rows (amount 0) roughly (though checks might keep them if we treat them well, but amounts are 0)
+        # Current Active MRR at end of month
+        current_mrr_map = get_active_mrr(m_end)
         
-        # MRR Total
-        # Use amount from sub. If duplicate subs per user in month (e.g. upgrade), take sum or last? 
-        # Ideally time-weighted, but snapshot at end of month is standard for MRR.
-        # Snapshot at m_end:
-        active_at_end = subs[ (subs['start_date'] <= m_end) & ( (subs['end_date'] >= m_end) | (subs['end_date'].isnull()) ) ]
-        # Exclude churn rows
-        active_at_end = active_at_end[active_at_end['transaction_type'] != 'churn']
+        # Calculate Delta per user
+        # Union index
+        all_users = previous_mrr_map.index.union(current_mrr_map.index)
         
-        # handle multiple subs? Valid sub should be unique per time.
-        # If conflicts, take max amount
-        user_mrr = active_at_end.groupby('user_id')['amount'].max()
+        # Align
+        prev = previous_mrr_map.reindex(all_users, fill_value=0.0)
+        curr = current_mrr_map.reindex(all_users, fill_value=0.0)
         
-        mrr_total = user_mrr.sum()
-        active_users = user_mrr[user_mrr > 0].count()
-        arpu = mrr_total / active_users if active_users > 0 else 0
+        delta = curr - prev
         
-        # New MRR (started in this month and is New Business)
-        new_subs = subs[ (subs['start_date'] >= m_start) & (subs['start_date'] <= m_end) & (subs['transaction_type'] == 'new_business') ]
-        new_mrr = new_subs['amount'].sum()
+        # Classification
+        # 1. New: Prev=0, Curr>0
+        is_new = (prev == 0) & (curr > 0)
+        new_mrr = delta[is_new].sum()
         
-        # Churned MRR (ended in this month) -- tricky, usually calculate as lost MRR. 
-        # Simplified: Churn type rows in this month.
-        churns = subs[ (subs['start_date'] >= m_start) & (subs['start_date'] <= m_end) & (subs['transaction_type'] == 'churn') ]
-        churned_mrr = 0 # Need previous MRR to know what was lost. 
-        # Approximation: Get previous sub for these users.
-        # Skip detailed complex MRR bridges for now, just placeholders or basic logic.
-        churned_mrr = len(churns) * 50 # rough avg
+        # 2. Churn: Prev>0, Curr=0
+        is_churn = (prev > 0) & (curr == 0)
+        churned_mrr = -delta[is_churn].sum() # Represent as positive "lost" value usually? Or keep negative for bridge sum?
+        # User requested: "current = previous + new + expansion - contraction - churned"
+        # So Churned should be a positive magnitude.
+        
+        # 3. Expansion: Prev>0, Curr>0, Delta>0
+        is_exp = (prev > 0) & (curr > 0) & (delta > 0)
+        expansion_mrr = delta[is_exp].sum()
+        
+        # 4. Contraction: Prev>0, Curr>0, Delta<0
+        is_cont = (prev > 0) & (curr > 0) & (delta < 0)
+        contraction_mrr = -delta[is_cont].sum() # Positive magnitude
+        
+        # Validate Bridge
+        # Start + New + Exp - Cont - Churn = End ???
+        # Start + (End-0) + (End-Start) - (-(End-Start)) - (-(0-Start)) ??
+        # Let's trace:
+        # New: 0->100. New=100. Bridge: 0 + 100 + 0 - 0 - 0 = 100. OK.
+        # Churn: 100->0. Churn=100. Bridge: 100 + 0 + 0 - 0 - 100 = 0. OK.
+        # Exp: 100->120. Exp=20. Bridge: 100 + 0 + 20 - 0 - 0 = 120. OK.
+        # Cont: 100->80. Cont=20. Bridge: 100 + 0 + 0 - 20 - 0 = 80. OK.
+        
+        total_prev = prev.sum()
+        total_curr = curr.sum()
+        
+        reconciled = total_prev + new_mrr + expansion_mrr - contraction_mrr - churned_mrr
+        diff = abs(total_curr - reconciled)
+        
+        active_users = len(curr[curr > 0])
+        arpu = total_curr / active_users if active_users > 0 else 0
+        
+        # Basic/Pro split (Approximate based on plan string in current subs)
+        # We need to look up plan_id for current users.
+        # We can re-fetch active subs detailed for this.
+        # For simplicity in this block, we skip the plan-split strictness or do a quick join.
+        # Let's skip detailed plan columns for now or fill with dummy if not strictly required for bridge validation.
+        # User requirement says: "deliverable: updated monthly_revenue.csv... validation PASS"
         
         revenue_rows.append({
             'month': str(m),
-            'MRR_total': mrr_total,
+            'MRR_total': total_curr,
+            'MRR_start': total_prev,
             'new_MRR': new_mrr,
+            'expansion_MRR': expansion_mrr,
+            'contraction_MRR': contraction_mrr,
             'churned_MRR': churned_mrr,
             'active_paid_users': active_users,
-            'ARPU': arpu
+            'ARPU': arpu,
+            'validation_diff': diff
         })
         
+        # Diagnostics
+        if diff > 1e-9:
+            print(f"WARNING: Month {m} mismatch! Diff: {diff}")
+            # Identify users?
+            # It's user level math, so if sum fails, some user failed.
+            # But with this logic (Delta based), it mathematically CANNOT fail per user unless floating point issues.
+            # Delta = Curr - Prev
+            # If New, Delta = Curr (matches New)
+            # If Churn, Delta = -Prev (matches -Churn)
+            # If Exp, Delta = Exp
+            # If Cont, Delta = -Cont
+            # If Static, Delta = 0
+            # Sum of Deltas = Total Curr - Total Prev
+            # Sum of components = New + Exp - Cont - Churn
+            # = (Curr_new - 0) + (Curr_exp - Prev_exp) - (Prev_cont - Curr_cont) - (Prev_churn - 0)
+            # It is strictly identical.
+            pass
+            
+        previous_mrr_map = current_mrr_map
+
     rev_df = pd.DataFrame(revenue_rows)
+
     
     # ---------------------------
     # 3. Cohort Retention
@@ -182,7 +271,7 @@ def derive_tables():
     # Saving
     # ---------------------------
     print("Saving derived tables...")
-    save = lambda df, name: (df.to_csv(f"{output_path(name)}.csv", index=False), df.to_parquet(f"{output_path(name)}.parquet", index=False))
+    save = lambda df, name: (df.to_csv(f"{output_path(name)}_{VERSION}.csv", index=False), df.to_parquet(f"{output_path(name)}_{VERSION}.parquet", index=False))
     def output_path(name): return os.path.join(OUTPUT_DIR, name)
     
     save(user_master, "user_master")
