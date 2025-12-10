@@ -87,10 +87,37 @@ def derive_tables():
         # But our cleaning logic kept 'Churn' rows with amount 0 maybe?
         # Let's filter transaction_type != 'Churn' for active state.
         
-        mask = (subs['start_date'] <= target_date) & \
-               ((subs['end_date'] >= target_date) | (subs['end_date'].isnull())) & \
-               (subs['transaction_type'] != 'churn') & (subs['amount'] > 0)
-               
+        # Active definition: 
+        # Start <= Target
+        # End >= Target (inclusive of the day). 
+        # Since Target is 23:59:59 and End is 00:00:00, we check: End + 1 Day > Target
+        # Or: End > Target - 1 Day? No, safer: (End + 1d) > Target.
+        # e.g. End=Jan 31 (Jan 31 00:00). Target=Jan 31 23:59.
+        # End+1d = Feb 1 00:00. Feb 1 00:00 > Jan 31 23:59. (True -> Active).
+        
+        # Handle End Date being Null (Active forever)
+        # Handle 'churn' transaction rows (exclude them)
+        
+        # Calculate effective end (for comparison only)
+        # We can't modify subs in place repeatedly.
+        # Use vectorized check.
+        
+        # Condition 1: Started before or at target
+        cond_start = subs['start_date'] <= target_date
+        
+        # Condition 2: Ends after target (inclusive of the target day) OR is Null
+        # adding Timedelta to Series
+        eff_end = subs['end_date'] + pd.Timedelta(days=1)
+        cond_end = (eff_end > target_date) | (subs['end_date'].isnull())
+        
+        # Condition 3: Not a Churn row
+        cond_type = subs['transaction_type'] != 'churn'
+        
+        # Condition 4: Positive Check
+        cond_amt = subs['amount'] > 0
+        
+        mask = cond_start & cond_end & cond_type & cond_amt
+        
         active_subs = subs[mask]
         
         # Deduplicate: If multiple active subs for user (rare), sum or max? 

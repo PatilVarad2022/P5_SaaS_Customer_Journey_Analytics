@@ -98,7 +98,14 @@ def validate():
     # Recalc from subs
     dec_end = pd.Timestamp('2024-12-31 23:59:59')
     # Active logic same as derive
-    active_subs = subs[ (subs['start_date'] <= dec_end) & ((subs['end_date'] >= dec_end) | (subs['end_date'].isnull())) & (subs['transaction_type']!='churn') & (subs['amount']>0)]
+    # Inclusive End: End + 1 day > Target (23:59:59)
+    eff_end = subs['end_date'] + pd.Timedelta(days=1)
+    
+    mask = (subs['start_date'] <= dec_end) & \
+           ((eff_end > dec_end) | (subs['end_date'].isnull())) & \
+           (subs['transaction_type'] != 'churn') & (subs['amount'] > 0)
+           
+    active_subs = subs[mask]
     mrr_dec_calc = active_subs.groupby('user_id')['amount'].sum().sum()
     
     diff = abs(mrr_dec_table - mrr_dec_calc)

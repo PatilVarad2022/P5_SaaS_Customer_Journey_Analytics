@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-11T00:52:08.149790",
+  "timestamp": "2025-12-11T01:58:58.838260",
   "tables": {
     "users": {
       "rows": 10000,
@@ -88,7 +88,7 @@
     {
       "test_name": "Sanity: MRR Dec vs Subs",
       "status": "PASS",
-      "message": "Table: 311809.0 vs Calc: 311809.0 (Diff: 0.0)",
+      "message": "Table: 312065.0 vs Calc: 312065.0 (Diff: 0.0)",
       "severity": "Critical"
     },
     {
