@@ -51,3 +51,41 @@ Primary Keys:
 - `user_master`: `user_id`
 - `monthly_revenue`: `month`
 - `cohort_retention`: `cohort`, `month_offset`
+
+### Example Joins for Dashboarding
+1. **Unify Funnel with User Dimensions**:
+   ```sql
+   /* Link funnel monthly aggregates to user demographics (Conceptual Blend) */
+   SELECT 
+     f.month, 
+     f.signups, 
+     f.paid_conversions,
+     u.acquisition_channel 
+   FROM monthly_funnel f
+   LEFT JOIN user_master u ON f.month = u.cohort_month 
+   /* Note: Funnel table is pre-aggregated, so better to aggregate user_master directly in Tableau */
+   ```
+
+2. **Churn Analysis**:
+   ```python
+   # Pandas Merge for Churn Flags
+   df = pd.read_parquet('user_master.parquet')
+   churn = pd.read_parquet('churn_flags.parquet')
+   full_view = df.merge(churn, on='user_id', how='left')
+   ```
+
+3. **Retention Heatmap**:
+   - Use `cohort_retention.parquet` directly.
+   - Rows: `cohort`
+   - Columns: `month_offset`
+   - Color: `retention_rate`
+
+4. **Support Impact on NPS**:
+   ```sql
+   SELECT 
+     s.*, 
+     u.current_plan 
+   FROM support_summary s
+   /* No direct join key to user_master unless blending on Month */
+   ```
+

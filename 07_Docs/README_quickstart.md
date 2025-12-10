@@ -3,6 +3,7 @@
 1. **Locate Data**: All Tableau-ready files are in `/06_Exports/tableau_ready/`. 
    - Files are Parquet format (clean names).
    - Validation Status: **PASS**.
+   - **Note**: All timestamps are UTC — set Tableau datasource to interpret timestamps as UTC (or convert on import).
 2. **Connect**: Open Tableau, select "More..." -> "Parquet" and load `user_master.parquet` as your primary table.
 3. **Relationships**: 
    - Link `monthly_revenue.parquet` to `user_master` isn't direct (Month aggregation vs User granularity). Treat Revenue as a separate data source or blend on Date.

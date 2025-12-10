@@ -17,31 +17,39 @@ def generate_excel():
         
         # 1. Inputs Sheet
         inputs_data = {
-            'Parameter': ['Gross Margin', 'Discount Rate', 'Basic Price', 'Pro Price', 'CAC Target'],
-            'Value': [0.85, 0.10, 29.0, 99.0, 150.0],
-            'Description': ['Margin after COGS', 'Annual WACC', 'Monthly Basic', 'Monthly Pro', 'Target Cost per Acq']
+            'Parameter': ['Gross Margin', 'Discount Rate', 'Price Basic', 'Price Pro', 'Monthly Churn Basic', 'Monthly Churn Pro', 'CAC Target'],
+            'Value': [0.85, 0.10, 29.0, 99.0, 0.05, 0.02, 150.0],
+            'Key': ['gross_margin', 'discount_rate', 'price_basic', 'price_pro', 'monthly_churn_basic', 'monthly_churn_pro', 'cac_target'],
+            'Description': ['Margin after COGS', 'Annual WACC', 'Monthly Basic Price', 'Monthly Pro Price', 'Est. Monthly Churn', 'Est. Monthly Churn', 'Target Cost per Acq']
         }
         pd.DataFrame(inputs_data).to_excel(writer, sheet_name='Inputs', index=False)
-        
-        # Named Ranges handled by Pandas? No, need workbook.define_name
-        # But XlsxWriter makes it easy.
         
         # 2. Monthly Data
         mrr_df.to_excel(writer, sheet_name='Monthly_Data', index=False)
         
-        # 3. User Summary (Aggregation for Excel modeling)
-        # Summarize retention curve (avg retention per offset)
+        # 3. User Summary
         retention_curve = cohort_df.groupby('month_offset')['retention_rate'].mean().reset_index()
         retention_curve.columns = ['Month_Offset', 'Avg_Retention']
         retention_curve.to_excel(writer, sheet_name='User_Summary', index=False)
         
-        # Define Names
-        # Inputs
-        workbook.define_name('Gross_Margin', '=Inputs!$B$2')
-        workbook.define_name('Discount_Rate', '=Inputs!$B$3')
+        # 4. README Sheet
+        readme_txt = pd.DataFrame([["This file contains inputs for the CLV model."], 
+                                   ["Do not rename sheets."], 
+                                   ["Named Ranges defined: gross_margin, discount_rate, price_basic, price_pro, etc."]])
+        readme_txt.to_excel(writer, sheet_name='README', index=False, header=False)
+
+
+        # Define Names (Absolute references to Inputs sheet)
+        # Assuming table starts at A1, Value is Col B (buffer), Key is Col C, but Data is:
+        # A: Parameter, B: Value, C: Key, D: Desc.
+        # So Value B2 is first row.
         
-        # Tables
-        # Just whole sheets for now or specific columns
+        # Map keys to rows (0-indexed in list -> 1-indexed in Excel + header row = +2)
+        key_map = {k: i+2 for i, k in enumerate(inputs_data['Key'])}
+        
+        for key, row_idx in key_map.items():
+            workbook.define_name(key, f'=Inputs!$B${row_idx}')
+
     
     print(f"Saved {OUTPUT_FILE}")
 
