@@ -1,7 +1,8 @@
 Criteria,Status,Notes
-Exports exist in /06_Exports/tableau_ready,PASS,5 files present
-DQ Report shows 0 Critical Failures,PASS,1 non-critical MRR diff warning
-Excel clv_inputs.xlsx Validated,PASS,Files generated and readable
+Exports exist in /06_Exports/tableau_ready,PASS,All v1.1 files present with MD5s
+DQ Report shows 0 Critical Failures,PASS,MRR Strict Bridge Implemented & Verified (2025-12-11)
+Excel clv_inputs_v1.1.xlsx Validated,PASS,Named ranges & Bridge Data present
 Cohort Table depth (12 cohorts+),PASS,Full 2024 matrix
 Funnel Covers all channels,PASS,Aggregated from full user base
 Performance (Generation time < 5min),PASS,~30 seconds for 10k users
+schema_version in Manifest,PASS,v1.1 tag apply to all rows
