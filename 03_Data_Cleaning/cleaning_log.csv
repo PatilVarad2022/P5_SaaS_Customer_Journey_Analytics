@@ -1,0 +1,6 @@
+table,row_count_before,row_count_after,rows_removed,reason_code
+users,10000,10000,0,Deduplication
+subscriptions,10819,10819,0,Missing FK user_id
+subscriptions,10819,10819,0,Negative MRR
+events,278442,278442,0,Invalid Date or Missing FK
+support_nps,970,970,0,Missing FK

@@ -1,0 +1,6 @@
+file_name,creation_timestamp,row_count,md5_checksum
+user_master_cleaned.parquet,2025-12-11T00:27:41.272441,10000,8cec3f1d70404fb368cb8f50bbd3d953
+monthly_revenue.parquet,2025-12-11T00:27:41.277817,12,09ea11d47049fb27399ef46f044b002e
+monthly_funnel.parquet,2025-12-11T00:27:41.283516,12,de2aa9883166d2d809c62d7e308310a2
+cohort_retention.parquet,2025-12-11T00:27:41.290134,78,9f1b9a6e9b8fb2806440d2136975cefa
+support_summary.parquet,2025-12-11T00:27:41.295549,12,154c4b2a4f901b6edd7f7ed2cc954bf0
