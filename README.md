@@ -1,24 +1,23 @@
-# 📊 P5 — SaaS Customer Journey Analytics (Backend Only)
+# 📊 P5 — SaaS Customer Journey Analytics
 
-This project implements the complete backend analytics layer for a SaaS product, covering the full customer journey: activation, conversion, retention, churn, MRR, ARPU, LTV, and scenario simulation.  
-It is designed as a portfolio project for **Product/Business/BI Analyst** roles.
+A production-ready analytics engine for SaaS customer journey analysis, delivering end-to-end metrics from activation through retention, churn, and revenue optimization.  
+Designed for **Product/Business/BI Analyst** roles with modular architecture and Tableau-ready exports.
 
-The backend is fully operational and generates all SaaS KPIs.  
-Tableau dashboard to be added later — exports available in /outputs/tableau_ready/.
+Pipeline produces comprehensive SaaS KPIs with full data lineage and explainability.
 
 ---
 
-## ✅ 1. Project Scope (Strict P5 Specification)
+## ✅ 1. Project Scope
 
-This project includes:
+This analytics engine delivers:
 
 ### **Customer Journey Analytics**
 - Freemium → Paid conversion funnel  
-- Activation rate  
-- Retention cohorts  
-- Churn analytics  
-- Revenue metrics (MRR, churn MRR, expansion MRR, ARPU)  
-- Customer Lifetime Value (rule-based, no ML)
+- Activation rate (14-day window)
+- Monthly retention cohorts  
+- MRR-based churn analytics  
+- Revenue metrics (MRR, ARR, NRR, GRR, expansion MRR, ARPU)  
+- Customer Lifetime Value (LTV)
 
 ### **Segmentation**
 - By country  
@@ -26,14 +25,14 @@ This project includes:
 - By acquisition channel  
 
 ### **Scenario Simulation**
-Implemented in Excel:
-- Pricing changes  
-- Activation uplift  
-- Churn rate override  
-- LTV and ARPU sensitivity
+Excel-based business layer:
+- Pricing sensitivity analysis
+- Activation uplift modeling
+- Churn rate scenarios
+- LTV and ARPU impact calculations
 
-### **NO ML • NO Forecasting • NO Clustering**
-All metrics are rule-based and fully explainable.
+### **Design Philosophy**
+All KPIs computed using industry-standard, rule-based logic aligned with SaaS best practices. Fully explainable and auditable.
 
 ---
 
@@ -70,7 +69,7 @@ All datasets are synthetic and follow SaaS industry conventions.
 
 ---
 
-## ⚙️ 3. How to Run the Backend Pipeline
+## ⚙️ 3. Running the Analytics Pipeline
 
 Install requirements:
 
@@ -118,56 +117,67 @@ This pipeline validates:
 
 ---
 
-## 📊 6. Key Outputs
+## 📊 6. Production Outputs
 
-The backend generates the following metrics:
+The analytics pipeline generates comprehensive, analysis-ready metrics:
 
-**`kpi_summary.csv`**
-- Total signups
-- Activation rate
+**`kpi_summary.csv`** — Single-row executive summary
+- Total signups and activation rate
 - Freemium → paid conversion
-- MRR and ARR
-- ARPU
+- MRR and ARR (Monthly/Annual Recurring Revenue)
+- ARPU (Average Revenue Per User)
 - LTV (Customer Lifetime Value)
 - Monthly churn rate (MRR-based)
 - Net Revenue Retention (NRR)
 - Gross Revenue Retention (GRR)
-- Quick Ratio
-- CAC (Customer Acquisition Cost) — requires optional `data/marketing_costs.csv`*
-- Payback Period — calculated when CAC is available
+- Quick Ratio (growth efficiency)
+- CAC (Customer Acquisition Cost)*
+- Payback Period*
 
-**Note on CAC**: The CAC metric is null by default. To enable CAC and payback period calculations, create a `data/marketing_costs.csv` file with columns: `month` (date) and `cost` (float). See `docs/data_dictionary.md` for the exact schema.
+*CAC and Payback Period are computed when `data/marketing_costs.csv` is provided. See `docs/data_dictionary.md` for schema.
 
-**`cohort_retention_matrix.csv`**
-- Monthly cohort survival
-- Retention % grid
+**`cohort_retention_matrix.csv`** — Cohort analysis
+- Monthly cohort survival rates
+- Retention % pivot table (cohort × months since signup)
 
-**`mrr_breakdown.csv`**
+**`mrr_breakdown.csv`** — Revenue movement analysis
 - New MRR
 - Expansion MRR
 - Churned MRR
-- Net MRR
+- Net MRR change
 
-**`tableau_ready/`**
-- Flat, clean extracts prepared for dashboarding (dates standardized, keys aligned).
-
----
-
-## 📈 7. Scenario Simulator (Excel)
-
-`P5_LTV_Simulator.xlsx` includes:
-- Pricing assumptions
-- Activation uplift
-- Churn override
-- LTV, ARPU, and MRR impact calculations
-
-This file is the business-facing layer of the project.
+**`tableau_ready/`** — Optimized for seamless BI integration
+- Flat, denormalized extracts with standardized date formats
+- Pre-joined customer master table
+- Revenue transaction history
+- Daily event stream
+- Ready for direct import into Tableau, Power BI, or Looker
 
 ---
 
-## 📑 8. Documentation
+## 📈 7. Business Scenario Simulator
 
-- `docs/data_dictionary.md` → column definitions for every dataset
-- `docs/metrics_definitions.md` → exact formulas for all KPIs (activation, funnel, churn, MRR, ARPU, LTV, cohorts)
+`P5_LTV_Simulator.xlsx` provides interactive what-if analysis:
+- Pricing sensitivity modeling
+- Activation rate impact scenarios
+- Churn rate adjustments
+- LTV, ARPU, and MRR projections
 
-These ensure full transparency and explainability.
+Excel-based interface designed for business stakeholders and executive presentations.
+
+---
+
+## 📑 8. Documentation & Transparency
+
+**Complete technical documentation:**
+- `docs/data_dictionary.md` — Schema definitions for all datasets
+- `docs/metrics_definitions.md` — Exact formulas and calculation logic for every KPI
+
+All metrics are fully documented with:
+- Mathematical formulas
+- Business logic explanations
+- Division-by-zero guards
+- Edge case handling
+
+Ensures complete auditability and stakeholder confidence.
+
