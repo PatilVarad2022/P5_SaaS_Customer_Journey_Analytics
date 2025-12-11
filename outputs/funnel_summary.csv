@@ -1,4 +1,4 @@
-Stage,Users,Conversion
-Signup,10000,1.0
-Activated,7099,0.7099
-Paid,8093,1.1400197210874772
+stage,count,conversion_rate
+signup,2000,1.0
+activation,1213,0.6065
+paid,502,0.251
