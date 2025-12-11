@@ -5,6 +5,9 @@ An end-to-end analytics pipeline for a B2B SaaS product. This project generates 
 
 **Tech Stack**: Python (Pandas, Numpy), Tableau (prepared extracts), Excel (LTV Simulator).
 
+### Project Structure
+![Project Structure](docs/screenshots/project_structure.png)
+
 ## Quick Start
 1. **Install dependencies**:
    ```bash
@@ -20,6 +23,14 @@ An end-to-end analytics pipeline for a B2B SaaS product. This project generates 
    - Check `/outputs/` for KPI summaries and cohort matrices.
    - Check `/outputs/tableau_ready/` for flat tables used in dashboards.
 
+## Key Outputs
+### KPI Summary (Automated Output)
+![KPI Summary](docs/screenshots/kpi_summary.png)
+
+### LTV Scenario Simulator (Excel Model)
+The **Excel Simulator** (`P5_LTV_Simulator.xlsx`) allows dynamic modeling of churn reduction and price changes.
+![LTV Simulator](docs/screenshots/ltv_simulator_output.png)
+
 ## Folder Structure
 - **/data/**: Raw CSV inputs (Users, Events, Subscriptions, Revenue, Support Tickets).
 - **/scripts/**: Python processing scripts.
@@ -29,24 +40,15 @@ An end-to-end analytics pipeline for a B2B SaaS product. This project generates 
 - **/outputs/**: Computed metrics.
   - `kpi_summary.csv`: High-level monthly metrics.
   - `cohort_retention_matrix.csv`: User retention by cohort month.
-  - `mrre_breakdown.csv`: Detailed MRR movement (New, Expansion, Churn).
+  - `mrre_breakdown.csv`: Detailed MRR movement.
 - **/docs/**: Documentation.
-  - `data_dictionary.md`: Column definitions.
-  - `metrics_definitions.md`: Formulas for all calculated KPIs.
 - **/tests/**: Unit tests for code integrity.
-- **/examples/**: Sample notebooks.
-- **P5_LTV_Simulator.xlsx**: Interactive Excel model for LTV and scenario planning.
 
 ## Key Datasets
-All dates are ISO 8601 (YYYY-MM-DD). 
-**Canonical Key**: `customer_id` is used across all files to link users, subscriptions, and events.
+**Canonical Key**: `customer_id` is used across all files.
 
-- **users.csv**: Customer metadata (Pricing Plan, Country, Acquisition Channel).
-- **events.csv**: Product usage log (Note: `campaign_create` is used as the 'Activation' event).
-- **subscriptions.csv**: Billing history and status.
-- **revenue.csv**: Transactional revenue log (Invoice level).
+- **users.csv**: Customer metadata.
+- **events.csv**: Product usage log (`campaign_create` = Activation).
+- **subscriptions.csv**: Billing history.
+- **revenue.csv**: Transactional revenue log.
 
-## Excel Simulator
-The **Excel Simulator** (`P5_LTV_Simulator.xlsx`) is located in the root directory. Open it to explore scenario modeling:
-- **Inputs**: Change Pricing, Monthly Churn %, and Activation Lift.
-- **Outputs**: See immediate impact on LTV, ARPU, and projected MRR.
