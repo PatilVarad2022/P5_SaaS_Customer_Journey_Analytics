@@ -1,0 +1,10 @@
+variable,value
+activation_rate_delta,0.0
+churn_rate_delta,0.0
+pricing_delta,0.0
+gross_margin,0.85
+discount_rate,0.1
+price_basic,9.99
+price_pro,29.99
+cogs_per_user,1.5
+cac_blended,50.0

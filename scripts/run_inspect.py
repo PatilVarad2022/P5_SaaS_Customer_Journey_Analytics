@@ -60,7 +60,7 @@ def run_checks():
                     failures += 1
 
             # Date Check
-            date_cols = [c for c in df.columns if "date" in c or "timestamp" in c or "at" in c]
+            date_cols = [c for c in df.columns if ("date" in c or "timestamp" in c or "at" in c) and "status" not in c]
             for dc in date_cols:
                 if not validate_date(df[dc], f"{filename}.{dc}"):
                     failures += 1

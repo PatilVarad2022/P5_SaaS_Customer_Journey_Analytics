@@ -49,6 +49,7 @@ subs = subs.rename(columns={
     "amount": "price"
 })
 subs["billing_period"] = "monthly"
+subs = subs.drop_duplicates(subset=["subscription_id"])
 required_subs = ["subscription_id", "customer_id", "plan", "start_date", "end_date", "status", "price", "billing_period"]
 subs = subs[required_subs]
 subs.to_csv(os.path.join(DEST_DIR, "subscriptions.csv"), index=False)

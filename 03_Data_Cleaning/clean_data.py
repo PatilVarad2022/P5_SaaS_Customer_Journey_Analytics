@@ -9,7 +9,7 @@ INPUT_DIR = "../02_Data_Generation/outputs"
 OUTPUT_DIR = "cleaned"
 LOG_FILE = "cleaning_log.csv"
 PROFILE_FILE = "data_profile_report.csv"
-VERSION = "v1.1"
+# VERSION = "v1.1" # Deprecated
 
 def ensure_dir(path):
     if not os.path.exists(path):
@@ -34,7 +34,7 @@ def clean_users():
     initial = len(df)
     
     # 1. Standardize format
-    df['email'] = df['user_id'] # No email in schema, using user_id as proxy if needed, but schema didn't ask for email.
+    df['email'] = df['user_id'] # No email in schema, using user_id as proxy if needed.
     
     # Lowercase categorical
     for col in ['country', 'acquisition_channel', 'initial_plan', 'job_role']:
@@ -47,11 +47,8 @@ def clean_users():
     # Deduplicate PK
     df = df.drop_duplicates(subset=['user_id'])
     
-    # Constraints? exist checks?
-    
     final = len(df)
     log_stat('users', initial, final, initial - final, 'Deduplication')
-    
     return df
 
 def clean_subscriptions(users_ids):
@@ -97,9 +94,7 @@ def clean_events(users_ids):
     # Dates
     df['event_timestamp'] = pd.to_datetime(df['event_timestamp'], errors='coerce')
     
-    # Drop invalid dates
-    # Filter 2024 only? Schema said 12 month window. Generator produces 2024.
-    # Let's enforce range for safety
+    # Drop invalid dates - Enforce 2024 range for safety if needed
     mask_date = (df['event_timestamp'] >= '2024-01-01') & (df['event_timestamp'] <= '2025-01-01')
     df = df[mask_date]
     
@@ -158,7 +153,6 @@ def generate_profile(dfs):
                 'min_val': df[col].dropna().min() if df[col].dtype != 'object' else '',
                 'max_val': df[col].dropna().max() if df[col].dtype != 'object' else ''
             }
-            # For objects, just take min/max string for rough idea or skip
             if df[col].dtype == 'object':
                  try:
                      stats['min_val'] = str(df[col].dropna().min())[:20]
@@ -178,17 +172,17 @@ def main():
     events = clean_events(users_ids)
     support = clean_support(users_ids)
     
-    # Save Cleaned
-    users.to_csv(os.path.join(OUTPUT_DIR, f"users_cleaned_{VERSION}.csv"), index=False)
-    subs.to_csv(os.path.join(OUTPUT_DIR, f"subscriptions_cleaned_{VERSION}.csv"), index=False)
-    events.to_csv(os.path.join(OUTPUT_DIR, f"events_cleaned_{VERSION}.csv"), index=False)
-    support.to_csv(os.path.join(OUTPUT_DIR, f"support_nps_cleaned_{VERSION}.csv"), index=False)
+    # Save Cleaned - Canonical filenames
+    users.to_csv(os.path.join(OUTPUT_DIR, "users_cleaned.csv"), index=False)
+    subs.to_csv(os.path.join(OUTPUT_DIR, "subscriptions_cleaned.csv"), index=False)
+    events.to_csv(os.path.join(OUTPUT_DIR, "events_cleaned.csv"), index=False)
+    support.to_csv(os.path.join(OUTPUT_DIR, "support_nps_cleaned.csv"), index=False)
     
-    # Parquet
-    users.to_parquet(os.path.join(OUTPUT_DIR, f"users_cleaned_{VERSION}.parquet"), index=False)
-    subs.to_parquet(os.path.join(OUTPUT_DIR, f"subscriptions_cleaned_{VERSION}.parquet"), index=False)
-    events.to_parquet(os.path.join(OUTPUT_DIR, f"events_cleaned_{VERSION}.parquet"), index=False)
-    support.to_parquet(os.path.join(OUTPUT_DIR, f"support_nps_cleaned_{VERSION}.parquet"), index=False)
+    # Parquet - Canonical filenames
+    users.to_parquet(os.path.join(OUTPUT_DIR, "users_cleaned.parquet"), index=False)
+    subs.to_parquet(os.path.join(OUTPUT_DIR, "subscriptions_cleaned.parquet"), index=False)
+    events.to_parquet(os.path.join(OUTPUT_DIR, "events_cleaned.parquet"), index=False)
+    support.to_parquet(os.path.join(OUTPUT_DIR, "support_nps_cleaned.parquet"), index=False)
 
     # Save Log
     log_df = pd.DataFrame(cleaning_stats)

@@ -16,6 +16,6 @@
 ## Visuals
 *(Place your screenshots here in /docs/screenshots/)*
 - **Excel Simulator**:
-  ![Simulator](docs/screenshots/simulator_view.png)
+  ![Simulator](docs/screenshots/ltv_simulator_output.png)
 - **KPI Summary**:
   ![KPIs](docs/screenshots/kpi_summary.png)
