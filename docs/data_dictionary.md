@@ -1,51 +1,39 @@
 # Data Dictionary
 
-## users.csv
+## /data/users.csv
 | Column | Type | Description |
 |---|---|---|
-| customer_id | String | Canonical unique identifier for a user. |
-| email | String | User email address. |
-| signup_date | Date | Date of account creation (YYYY-MM-DD). |
-| country | String | User's country. |
-| pricing_plan | String | Initial pricing plan selected. |
-| acquisition_channel | String | Channel where the user was acquired (e.g., Organic, Ads). |
+| customer_id | String | Unique identifier for the user. Primary Key. |
+| signup_date | Date | Date when the user created their account (YYYY-MM-DD). |
+| country | String | User's geographical location. |
+| pricing_plan | String | The initial plan selected during signup (e.g., Basic, Pro). |
+| acquisition_channel | String | Marketing channel source (e.g., Organic, Paid Ads). |
 | status | String | Current account status (Active, Cancelled). |
 
-## events.csv
+## /data/events.csv
 | Column | Type | Description |
 |---|---|---|
-| event_id | String | Unique event identifier. |
-| customer_id | String | Foreign key to users.csv. |
-| event_name | String | Name of the action (e.g., login, campaign_create). |
-| event_timestamp | Datetime | Exact time of event (YYYY-MM-DDTHH:MM:SS). |
+| event_id | String | Unique identifier for the event. |
+| customer_id | String | Foreign key linking to users.csv. |
+| event_name | String | The specific action taken (e.g., `login`, `campaign_create`). |
+| event_timestamp | Datetime | The exact time the event occurred (ISO 8601). |
 
-## subscriptions.csv
+## /data/subscriptions.csv
 | Column | Type | Description |
 |---|---|---|
-| subscription_id | String | Unique subscription identifier. |
-| customer_id | String | Foreign key to users.csv. |
-| plan | String | Subscription plan name. |
-| start_date | Date | Start date of the subscription. |
-| end_date | Date | End date of the subscription (nullable if active). |
-| status | String | Status of subscription (Active, Churned). |
-| price | Float | Monthly cost of the plan. |
-| billing_period | String | Billing frequency (Monthly/Annual). |
+| subscription_id | String | Unique identifier for the subscription. |
+| customer_id | String | Foreign key linking to users.csv. |
+| plan | String | The name of the subscription plan. |
+| start_date | Date | The date the subscription became active. |
+| end_date | Date | The date the subscription ended (Null if active). |
+| status | String | Subscription status (Active, Churned, Past Due). |
+| price | Float | Monthly recurring cost of the subscription. |
 
-## revenue.csv
+## /data/revenue.csv
 | Column | Type | Description |
 |---|---|---|
-| invoice_id | String | Unique invoice identifier. |
-| customer_id | String | Foreign key to users.csv. |
-| amount | Float | Billed amount. |
-| revenue_date | Date | Date of revenue recognition. |
-| revenue_type | String | Category (new, recurring, expansion, churn, refund). |
-
-## support_tickets.csv
-| Column | Type | Description |
-|---|---|---|
-| ticket_id | String | Unique ticket identifier. |
-| customer_id | String | Foreign key to users.csv. |
-| created_at | Datetime | Ticket creation time. |
-| resolved_at | Datetime | Ticket resolution time. |
-| issue_category | String | Category of the issue (Technical, Billing, etc.). |
-| priority | String | Priority level (High, Medium, Low). |
+| invoice_id | String | Unique identifier for a billing transaction. |
+| customer_id | String | Foreign key linking to users.csv. |
+| amount | Float | The billed amount in USD. |
+| revenue_date | Date | The date the revenue was recognized. |
+| revenue_type | String | Classification: `new`, `recurring`, `expansion`, `churn`. |

@@ -1,54 +1,109 @@
-# SaaS Customer Journey Analytics (P5)
+# P5 — SaaS Customer Journey Analytics (Backend)
 
-## Purpose
-An end-to-end analytics pipeline for a B2B SaaS product. This project generates synthetic user journey data, computes core business KPIs (MRR, Churn, LTV, Activation), and produces Tableau-ready extracts. It is designed to demonstrate full-stack data engineering and analytics capabilities, ensuring data consistency from raw logs to executive dashboards.
+**Purpose.** Production-quality backend for a SaaS product-analytics project designed for Analyst CVs: funnel → cohorts → revenue (MRR/ARPU/LTV) → segmentation → scenario simulation (Excel).  
+**Scope.** Backend only: data pipelines, KPI computation, Tableau-ready extracts, and an Excel LTV & scenario simulator. No frontend / no ML.
 
-**Tech Stack**: Python (Pandas, Numpy), Tableau (prepared extracts), Excel (LTV Simulator).
+---
 
-### Project Structure
-![Project Structure](docs/screenshots/project_structure.png)
+## Quick status
+- Backend: ✅ Implemented  
+- Excel simulator: ✅ `P5_LTV_Simulator.xlsx` (open to view inputs & results)  
+- Tableau dashboard: 🔜 Planned (exports available in `/outputs/tableau_ready/`)  
+- How a recruiter can verify (without running code): open `/outputs/` and `/docs/screenshots/`.
 
-## Quick Start
-1. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. **Run the pipeline**:
-   ```bash
-   python scripts/run_inspect.py       # Validate data schema and quality
-   python scripts/compute_metrics.py   # Generate KPI tables (MRR, Churn, Retention)
-   python scripts/export_tableau_extracts.py # Create BI-ready data sources
-   ```
-3. **Explore Outputs**: 
-   - Check `/outputs/` for KPI summaries and cohort matrices.
-   - Check `/outputs/tableau_ready/` for flat tables used in dashboards.
+---
 
-## Key Outputs
-### KPI Summary (Automated Output)
-![KPI Summary](docs/screenshots/kpi_summary.png)
+## Repo layout
 
-### LTV Scenario Simulator (Excel Model)
-The **Excel Simulator** (`P5_LTV_Simulator.xlsx`) allows dynamic modeling of churn reduction and price changes.
-![LTV Simulator](docs/screenshots/ltv_simulator_output.png)
+```text
+/
+├─ data/
+│  ├─ users.csv
+│  ├─ events.csv
+│  ├─ subscriptions.csv
+│  ├─ revenue.csv
+├─ scripts/
+│  ├─ run_inspect.py
+│  ├─ compute_metrics.py
+│  ├─ export_tableau_extracts.py
+├─ notebooks/
+│  └─ pipeline_demo.py
+├─ outputs/
+│  ├─ kpi_summary.csv
+│  ├─ cohort_retention_matrix.csv
+│  └─ tableau_ready/
+├─ docs/
+│  ├─ screenshots/
+│  ├─ data_dictionary.md
+│  └─ metrics_definitions.md
+├─ P5_LTV_Simulator.xlsx
+├─ tests/
+├─ requirements.txt
+└─ README.md
+```
 
-## Folder Structure
-- **/data/**: Raw CSV inputs (Users, Events, Subscriptions, Revenue, Support Tickets).
-- **/scripts/**: Python processing scripts.
-  - `run_inspect.py`: specific data validation checks (nulls, keys, types).
-  - `compute_metrics.py`: Calculation of Activation Rate, Funnel, MRR, ARPU, LTV.
-  - `export_tableau_extracts.py`: Flattens data for easy import into Tableau/PowerBI.
-- **/outputs/**: Computed metrics.
-  - `kpi_summary.csv`: High-level monthly metrics.
-  - `cohort_retention_matrix.csv`: User retention by cohort month.
-  - `mrre_breakdown.csv`: Detailed MRR movement.
-- **/docs/**: Documentation.
-- **/tests/**: Unit tests for code integrity.
+---
 
-## Key Datasets
-**Canonical Key**: `customer_id` is used across all files.
+## How to reproduce (one-liners)
+```bash
+# 1. prepare environment
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
 
-- **users.csv**: Customer metadata.
-- **events.csv**: Product usage log (`campaign_create` = Activation).
-- **subscriptions.csv**: Billing history.
-- **revenue.csv**: Transactional revenue log.
+# 2. run validation and produce outputs
+python scripts/run_inspect.py     # validates schemas & dates -> writes /outputs/inspections/
+python scripts/compute_metrics.py # writes /outputs/kpi_summary.csv, cohort_retention_matrix.csv, mrr_breakdown.csv
+python scripts/export_tableau_extracts.py # writes /outputs/tableau_ready/*
+```
 
+---
+
+## What to look at (recruiter checklist)
+
+* `/outputs/kpi_summary.csv` — activation rate, funnel conversions, ARPU, LTV summary.
+* `/outputs/cohort_retention_matrix.csv` — monthly cohort survival table.
+* `/outputs/mrr_breakdown.csv` — new / expansion / churn MRR.
+* `/P5_LTV_Simulator.xlsx` — open `Inputs` tab to see scenario variables; `Results` tab shows LTV / ARPU / MRR impact.
+* `/docs/screenshots/` — screenshots of outputs and repository structure for quick review.
+
+---
+
+## Data & metrics (short)
+
+See `docs/data_dictionary.md` for column-level definitions. See `docs/metrics_definitions.md` for explicit formulas (activation rate, funnel steps, monthly churn, MRR breakdown, ARPU, cohort LTV). Example formula (documented in `metrics_definitions.md`):
+
+* **Activation rate** = (# customers with `event_name = "campaign_create"` within 14 days of `signup_date`) / (total signups)
+* **Monthly churn rate** = (MRR lost from cancellations in month) / (MRR at start of month)
+* **MRR** = sum of active monthly-recurring prices for active subscriptions (normalize annual to monthly)
+
+---
+
+## Tests & CI
+
+Run the tests:
+
+```bash
+python tests/test_schema.py
+python tests/test_keys_unique.py
+```
+
+(If CI is enabled, a GitHub Actions workflow will run `scripts/run_inspect.py` on PRs.)
+
+---
+
+## Notes for recruiters / reviewers
+
+This repo intentionally ships a complete, runnable backend and an Excel simulator so recruiters can verify analytics outputs immediately. The Tableau dashboard is not included in this commit; Tableau-ready extracts are provided for rapid dashboard construction.
+
+---
+
+## Contact / Author
+
+Varad Patil — Backend & Analytics lead
+Github: `https://github.com/PatilVarad2022/P5_SaaS_Customer_Journey_Analytics`
+
+---
+
+## License
+
+MIT
