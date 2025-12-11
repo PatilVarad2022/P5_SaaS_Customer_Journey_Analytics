@@ -126,9 +126,17 @@ The backend generates the following metrics:
 - Total signups
 - Activation rate
 - Freemium → paid conversion
+- MRR and ARR
 - ARPU
-- LTV
-- Monthly churn
+- LTV (Customer Lifetime Value)
+- Monthly churn rate (MRR-based)
+- Net Revenue Retention (NRR)
+- Gross Revenue Retention (GRR)
+- Quick Ratio
+- CAC (Customer Acquisition Cost) — requires optional `data/marketing_costs.csv`*
+- Payback Period — calculated when CAC is available
+
+**Note on CAC**: The CAC metric is null by default. To enable CAC and payback period calculations, create a `data/marketing_costs.csv` file with columns: `month` (date) and `cost` (float). See `docs/data_dictionary.md` for the exact schema.
 
 **`cohort_retention_matrix.csv`**
 - Monthly cohort survival
