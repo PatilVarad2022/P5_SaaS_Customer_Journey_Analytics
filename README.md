@@ -100,7 +100,25 @@ Outputs will appear in `/outputs/` and `/outputs/tableau_ready/`.
 
 ---
 
-## 📊 4. Key Outputs
+## ⚡ 4. How to Reproduce Demo
+
+A set of pre-calculated demo outputs is available in the `demo_sample/` folder for immediate inspection:
+- `demo_sample/kpi_summary.csv`
+- `demo_sample/cohort_retention_matrix.csv`
+- `demo_sample/kpi_summary.png`
+
+To regenerate these yourself, simply run the pipeline commands above.
+
+## ✅ 5. Verifiable Claims & Integrity
+
+This pipeline validates:
+- **Schema & Types**: Verified by `run_inspect.py`
+- **Data Consistency**: Cross-referenced `customer_id` across all tables.
+- **Metric Definitions**: All formulas documented in `docs/metrics_definitions.md` matches `compute_metrics.py` logic.
+
+---
+
+## 📊 6. Key Outputs
 
 The backend generates the following metrics:
 
@@ -127,7 +145,7 @@ The backend generates the following metrics:
 
 ---
 
-## 📈 5. Scenario Simulator (Excel)
+## 📈 7. Scenario Simulator (Excel)
 
 `P5_LTV_Simulator.xlsx` includes:
 - Pricing assumptions
@@ -139,7 +157,7 @@ This file is the business-facing layer of the project.
 
 ---
 
-## 📑 6. Documentation
+## 📑 8. Documentation
 
 - `docs/data_dictionary.md` → column definitions for every dataset
 - `docs/metrics_definitions.md` → exact formulas for all KPIs (activation, funnel, churn, MRR, ARPU, LTV, cohorts)
