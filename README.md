@@ -1,109 +1,147 @@
-# P5 — SaaS Customer Journey Analytics (Backend)
+# 📊 P5 — SaaS Customer Journey Analytics (Backend Only)
 
-**Purpose.** Production-quality backend for a SaaS product-analytics project designed for Analyst CVs: funnel → cohorts → revenue (MRR/ARPU/LTV) → segmentation → scenario simulation (Excel).  
-**Scope.** Backend only: data pipelines, KPI computation, Tableau-ready extracts, and an Excel LTV & scenario simulator. No frontend / no ML.
+This project implements the complete backend analytics layer for a SaaS product, covering the full customer journey: activation, conversion, retention, churn, MRR, ARPU, LTV, and scenario simulation.  
+It is designed as a portfolio project for **Product/Business/BI Analyst** roles.
 
----
-
-## Quick status
-- Backend: ✅ Implemented  
-- Excel simulator: ✅ `P5_LTV_Simulator.xlsx` (open to view inputs & results)  
-- Tableau dashboard: 🔜 Planned (exports available in `/outputs/tableau_ready/`)  
-- How a recruiter can verify (without running code): open `/outputs/` and `/docs/screenshots/`.
+The backend is fully operational and generates all SaaS KPIs.  
+A Tableau dashboard will be added later — the dataset and extracts are already prepared.
 
 ---
 
-## Repo layout
+## ✅ 1. Project Scope (Strict P5 Specification)
+
+This project includes:
+
+### **Customer Journey Analytics**
+- Freemium → Paid conversion funnel  
+- Activation rate  
+- Retention cohorts  
+- Churn analytics  
+- Revenue metrics (MRR, churn MRR, expansion MRR, ARPU)  
+- Customer Lifetime Value (rule-based, no ML)
+
+### **Segmentation**
+- By country  
+- By pricing plan  
+- By acquisition channel  
+
+### **Scenario Simulation**
+Implemented in Excel:
+- Pricing changes  
+- Activation uplift  
+- Churn rate override  
+- LTV and ARPU sensitivity
+
+### **NO ML • NO Forecasting • NO Clustering**
+All metrics are rule-based and fully explainable.
+
+---
+
+## 📁 2. Repository Structure
 
 ```text
-/
-├─ data/
-│  ├─ users.csv
-│  ├─ events.csv
-│  ├─ subscriptions.csv
-│  ├─ revenue.csv
-├─ scripts/
-│  ├─ run_inspect.py
-│  ├─ compute_metrics.py
-│  ├─ export_tableau_extracts.py
-├─ notebooks/
-│  └─ pipeline_demo.py
-├─ outputs/
-│  ├─ kpi_summary.csv
-│  ├─ cohort_retention_matrix.csv
-│  └─ tableau_ready/
-├─ docs/
-│  ├─ screenshots/
-│  ├─ data_dictionary.md
-│  └─ metrics_definitions.md
-├─ P5_LTV_Simulator.xlsx
-├─ tests/
-├─ requirements.txt
-└─ README.md
+/data
+    users.csv
+    events.csv
+    subscriptions.csv
+    revenue.csv
+
+/scripts
+    run_inspect.py
+    compute_metrics.py
+    export_tableau_extracts.py
+
+/outputs
+    kpi_summary.csv
+    cohort_retention_matrix.csv
+    mrr_breakdown.csv
+    /tableau_ready/
+
+/docs
+    data_dictionary.md
+    metrics_definitions.md
+
+P5_LTV_Simulator.xlsx
+README.md
+requirements.txt
 ```
+
+All datasets are synthetic and follow SaaS industry conventions.
 
 ---
 
-## How to reproduce (one-liners)
+## ⚙️ 3. How to Run the Backend Pipeline
+
+Install requirements:
+
 ```bash
-# 1. prepare environment
-python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-
-# 2. run validation and produce outputs
-python scripts/run_inspect.py     # validates schemas & dates -> writes /outputs/inspections/
-python scripts/compute_metrics.py # writes /outputs/kpi_summary.csv, cohort_retention_matrix.csv, mrr_breakdown.csv
-python scripts/export_tableau_extracts.py # writes /outputs/tableau_ready/*
 ```
 
----
-
-## What to look at (recruiter checklist)
-
-* `/outputs/kpi_summary.csv` — activation rate, funnel conversions, ARPU, LTV summary.
-* `/outputs/cohort_retention_matrix.csv` — monthly cohort survival table.
-* `/outputs/mrr_breakdown.csv` — new / expansion / churn MRR.
-* `/P5_LTV_Simulator.xlsx` — open `Inputs` tab to see scenario variables; `Results` tab shows LTV / ARPU / MRR impact.
-* `/docs/screenshots/` — screenshots of outputs and repository structure for quick review.
-
----
-
-## Data & metrics (short)
-
-See `docs/data_dictionary.md` for column-level definitions. See `docs/metrics_definitions.md` for explicit formulas (activation rate, funnel steps, monthly churn, MRR breakdown, ARPU, cohort LTV). Example formula (documented in `metrics_definitions.md`):
-
-* **Activation rate** = (# customers with `event_name = "campaign_create"` within 14 days of `signup_date`) / (total signups)
-* **Monthly churn rate** = (MRR lost from cancellations in month) / (MRR at start of month)
-* **MRR** = sum of active monthly-recurring prices for active subscriptions (normalize annual to monthly)
-
----
-
-## Tests & CI
-
-Run the tests:
+Run validation:
 
 ```bash
-python tests/test_schema.py
-python tests/test_keys_unique.py
+python scripts/run_inspect.py
 ```
 
-(If CI is enabled, a GitHub Actions workflow will run `scripts/run_inspect.py` on PRs.)
+Compute all SaaS KPIs:
+
+```bash
+python scripts/compute_metrics.py
+```
+
+Generate Tableau-ready extracts:
+
+```bash
+python scripts/export_tableau_extracts.py
+```
+
+Outputs will appear in `/outputs/` and `/outputs/tableau_ready/`.
 
 ---
 
-## Notes for recruiters / reviewers
+## 📊 4. Key Outputs
 
-This repo intentionally ships a complete, runnable backend and an Excel simulator so recruiters can verify analytics outputs immediately. The Tableau dashboard is not included in this commit; Tableau-ready extracts are provided for rapid dashboard construction.
+The backend generates the following metrics:
+
+**`kpi_summary.csv`**
+- Total signups
+- Activation rate
+- Freemium → paid conversion
+- ARPU
+- LTV
+- Monthly churn
+
+**`cohort_retention_matrix.csv`**
+- Monthly cohort survival
+- Retention % grid
+
+**`mrr_breakdown.csv`**
+- New MRR
+- Expansion MRR
+- Churned MRR
+- Net MRR
+
+**`tableau_ready/`**
+- Flat, clean extracts prepared for dashboarding (dates standardized, keys aligned).
 
 ---
 
-## Contact / Author
+## 📈 5. Scenario Simulator (Excel)
 
-Varad Patil — Backend & Analytics lead
-Github: `https://github.com/PatilVarad2022/P5_SaaS_Customer_Journey_Analytics`
+`P5_LTV_Simulator.xlsx` includes:
+- Pricing assumptions
+- Activation uplift
+- Churn override
+- LTV, ARPU, and MRR impact calculations
+
+This file is the business-facing layer of the project.
 
 ---
 
-## License
+## 📑 6. Documentation
 
-MIT
+- `docs/data_dictionary.md` → column definitions for every dataset
+- `docs/metrics_definitions.md` → exact formulas for all KPIs (activation, funnel, churn, MRR, ARPU, LTV, cohorts)
+
+These ensure full transparency and explainability.
