@@ -1,2 +1,2 @@
 run_date,active_users,active_last_30_days,signup_count,activate_count,paid_count,activation_pct,drop_signup_to_activate,drop_activate_to_paid,total_mrr,churn_mrr,monthly_churn_pct,arpu,monthly_ltv,arr,cac,reactivation_pct
-2025-12-12T04:37:25.724323,999,159,2000,1213,502,0.6065,0.39349999999999996,0.5861500412201155,280198.0,0.0,0.0,280.47847847847845,,3362376.0,,0.0
+2025-12-12T04:43:23.940578,999,159,2000,1213,502,0.6065,0.39349999999999996,0.5861500412201155,280198.0,0.0,0.0,280.47847847847845,,3362376.0,,0.0
