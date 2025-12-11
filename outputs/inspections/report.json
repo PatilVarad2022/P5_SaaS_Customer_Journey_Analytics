@@ -1,0 +1,21 @@
+{
+  "checks": [
+    {
+      "file": "users.csv",
+      "ok": true
+    },
+    {
+      "file": "events.csv",
+      "ok": true
+    },
+    {
+      "file": "subscriptions.csv",
+      "ok": true
+    },
+    {
+      "file": "revenue.csv",
+      "ok": true
+    }
+  ],
+  "status": "ok"
+}
