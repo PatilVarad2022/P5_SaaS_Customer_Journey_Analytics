@@ -37,3 +37,12 @@
 | amount | Float | The billed amount in USD. |
 | revenue_date | Date | The date the revenue was recognized. |
 | revenue_type | String | Classification: `new`, `recurring`, `expansion`, `churn`. |
+
+## /exports/tableau_ready/customer_master_extract.csv
+| Column | Type | Description |
+|---|---|---|
+| customer_id | String | Unique user ID. |
+| signup_date | Date | Account creation date. |
+| current_plan | String | Most recent plan associated with the user. |
+| last_payment_date | Date | Date of the last successful transaction. |
+| total_lifetime_revenue | Float | Sum of all revenue from this user. |

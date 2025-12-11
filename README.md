@@ -4,7 +4,7 @@ This project implements the complete backend analytics layer for a SaaS product,
 It is designed as a portfolio project for **Product/Business/BI Analyst** roles.
 
 The backend is fully operational and generates all SaaS KPIs.  
-A Tableau dashboard will be added later — the dataset and extracts are already prepared.
+Tableau dashboard to be added later — exports available in /outputs/tableau_ready/.
 
 ---
 
