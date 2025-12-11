@@ -33,3 +33,18 @@ The total expected revenue from a single customer over their entire relationship
 ## 7. Cohort Retention
 Percentage of original users from a specific timeframe (Cohort) who remain active over subsequent months.
 - **Formula**: `(Users from Cohort C active in Month M) / (Total Users in Cohort C)`
+
+## 8. Funnel Conversion & Drop-off
+Measures user progression through key stages.
+- **Signup → Activate Drop-off**: `1 - (Activated Users / Total Signups)`
+- **Activate → Paid Drop-off**: `1 - (Paid Users / Activated Users)`
+
+## 9. Customer Acquisition Cost (CAC)
+Average cost to acquire one new customer.
+- **Formula**: `Total Marketing Spend in Month M / New Customers Acquired in Month M`
+- **Note**: Requires marketing_costs.csv data.
+
+## 10. Reactivation Rate
+Percentage of previously churned customers who return.
+- **Formula**: `Count(Customers with multiple subscription records) / Total Customers`
+- **Business Logic**: Identifies win-back effectiveness.
