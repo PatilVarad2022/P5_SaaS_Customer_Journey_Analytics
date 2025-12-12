@@ -1,2 +1,2 @@
-activation_rate,engagement_depth,retention_rate,churn_risk_score,avg_time_to_activate_hours,total_mrr,total_arr,avg_revenue_per_user,avg_ltv,churn_rate
-0.6065,1.8115,0.3009761388286334,0.6157499999999999,166.4765045342127,280198.0,3362376.0,140.099,498.5729537366547,0.281
+activation_rate,engagement_depth,retention_rate,churn_risk_score,avg_time_to_activate_hours,total_mrr,total_arr,avg_revenue_per_user,avg_ltv,churn_rate,active_users,active_last_30_days,signup_count,activation_count,churn_count
+0.6065,1.8115,0.3009761388286334,0.6157499999999999,166.4765045342127,280198.0,3362376.0,140.099,498.5729537366547,0.281,662,662,2000,1213,562

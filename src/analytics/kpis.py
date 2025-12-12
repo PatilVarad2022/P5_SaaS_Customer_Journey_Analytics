@@ -92,5 +92,10 @@ def calculate_kpis(users: pd.DataFrame, events: pd.DataFrame, journey_df: pd.Dat
         "total_arr": float(total_arr),
         "avg_revenue_per_user": float(avg_revenue_per_user),
         "avg_ltv": float(avg_ltv),
-        "churn_rate": float(churn_rate_strict) # for test compatibility
+        "churn_rate": float(churn_rate_strict), # for test compatibility
+        "active_users": int(journey_df[journey_df["lifecycle_segment"] == "Active"].shape[0]),
+        "active_last_30_days": int(journey_df[journey_df["stage"].isin(["Engagement", "Retained"])].shape[0]), # similar to Active
+        "signup_count": int(n_users),
+        "activation_count": int(n_activated),
+        "churn_count": int(churned_users)
     }
