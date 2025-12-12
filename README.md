@@ -1,9 +1,9 @@
 # 📊 P5 — SaaS Customer Journey Analytics
 
-A production-ready analytics engine for SaaS customer journey analysis, delivering end-to-end metrics from activation through retention, churn, and revenue optimization.  
-Designed for **Product/Business/BI Analyst** roles with modular architecture and Tableau-ready exports.
+An enterprise-grade analytics engine for SaaS customer journey analysis, delivering end-to-end metrics from activation through retention, churn, and revenue optimization.  
+Built for **Product/Business/BI Analyst** portfolio demonstration with modular architecture and Tableau-ready exports.
 
-Pipeline produces comprehensive SaaS KPIs with full data lineage and explainability.
+Pipeline generates comprehensive SaaS KPIs with full data lineage and explainability.
 
 ---
 
@@ -117,7 +117,7 @@ This pipeline validates:
 
 ---
 
-## 📊 6. Production Outputs
+## 📊 6. Generated Outputs
 
 The analytics pipeline generates comprehensive, analysis-ready metrics:
 
