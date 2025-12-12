@@ -5,7 +5,7 @@ from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-def calculate_kpis(users: pd.DataFrame, events: pd.DataFrame, journey_df: pd.DataFrame) -> Dict[str, float]:
+def calculate_kpis(users: pd.DataFrame, events: pd.DataFrame, journey_df: pd.DataFrame, subs: pd.DataFrame) -> Dict[str, float]:
     """
     Calculates Mandatory KPIs:
     - Activation rate
@@ -83,14 +83,14 @@ def calculate_kpis(users: pd.DataFrame, events: pd.DataFrame, journey_df: pd.Dat
         churn_rate_strict = 0.0
 
     return {
-        "activation_rate": activation_rate,
-        "engagement_depth": engagement_depth,
-        "retention_rate": retention_rate,
-        "churn_risk_score": avg_churn_risk,
-        "avg_time_to_activate_hours": avg_time_to_activate_hours,
-        "total_mrr": total_mrr,
-        "total_arr": total_arr,
-        "avg_revenue_per_user": avg_revenue_per_user,
-        "avg_ltv": avg_ltv,
-        "churn_rate": churn_rate_strict # for test compatibility
+        "activation_rate": float(activation_rate),
+        "engagement_depth": float(engagement_depth),
+        "retention_rate": float(retention_rate),
+        "churn_risk_score": float(avg_churn_risk),
+        "avg_time_to_activate_hours": float(avg_time_to_activate_hours),
+        "total_mrr": float(total_mrr),
+        "total_arr": float(total_arr),
+        "avg_revenue_per_user": float(avg_revenue_per_user),
+        "avg_ltv": float(avg_ltv),
+        "churn_rate": float(churn_rate_strict) # for test compatibility
     }

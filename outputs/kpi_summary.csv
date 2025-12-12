@@ -1,2 +1,2 @@
-run_date,active_users,active_last_30_days,signup_count,activation_count,churn_count,churn_rate,activation_rate,avg_ltv,total_mrr,total_arr,net_revenue_retention,gross_revenue_retention,quick_ratio,customer_acquisition_cost,avg_revenue_per_user,customer_lifetime_months,payback_period_months
-2025-12-12T05:42:08.377200,999,159,2000,1213,0,0.0,0.6065,,280198.0,3362376.0,1.1332196247617137,1.0,,,280.47847847847845,,
+activation_rate,engagement_depth,retention_rate,churn_risk_score,avg_time_to_activate_hours,total_mrr,total_arr,avg_revenue_per_user,avg_ltv,churn_rate
+0.6065,1.8115,0.3009761388286334,0.6157499999999999,166.4765045342127,280198.0,3362376.0,140.099,498.5729537366547,0.281

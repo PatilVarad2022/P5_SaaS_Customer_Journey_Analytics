@@ -1,0 +1,12 @@
+{
+  "activation_rate": 0.6065,
+  "engagement_depth": 1.8115,
+  "retention_rate": 0.3009761388286334,
+  "churn_risk_score": 0.6157499999999999,
+  "avg_time_to_activate_hours": 166.4765045342127,
+  "total_mrr": 280198.0,
+  "total_arr": 3362376.0,
+  "avg_revenue_per_user": 140.099,
+  "avg_ltv": 498.5729537366547,
+  "churn_rate": 0.281
+}
