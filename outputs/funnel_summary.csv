@@ -1,4 +1,2 @@
-stage,count,conversion_rate
-signup,2000,1.0
-activation,1213,0.6065
-paid,502,0.251
+acquisition,activation,retention,conversion_rates,drop_off
+2000,1213,302,"{'signup_to_activation': 0.6065, 'activation_to_paid': 0.24896949711459193}","{'activation_drop_off': 0.39349999999999996, 'paid_drop_off': 0.7510305028854081}"

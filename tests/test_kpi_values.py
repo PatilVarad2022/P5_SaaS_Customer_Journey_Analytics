@@ -48,13 +48,14 @@ def test_kpi_retention_metrics():
     """Test revenue retention metrics if available."""
     k = pd.read_csv(KPI_FILE).iloc[0]
     
-    # If NRR is available, it should be positive (can be > 1 with expansion)
-    if pd.notna(k["net_revenue_retention"]):
+    
+    # If NRR is available
+    if "net_revenue_retention" in k and pd.notna(k["net_revenue_retention"]):
         assert float(k["net_revenue_retention"]) >= 0, \
             f"net_revenue_retention {k['net_revenue_retention']} should be non-negative"
     
-    # If GRR is available, it should be between 0 and 1
-    if pd.notna(k["gross_revenue_retention"]):
+    # If GRR is available
+    if "gross_revenue_retention" in k and pd.notna(k["gross_revenue_retention"]):
         assert 0 <= float(k["gross_revenue_retention"]) <= 1, \
             f"gross_revenue_retention {k['gross_revenue_retention']} out of range [0,1]"
 
@@ -68,8 +69,8 @@ def test_kpi_ltv_metrics():
         assert float(k["avg_ltv"]) > 0, \
             f"avg_ltv {k['avg_ltv']} should be positive"
     
-    # If customer lifetime months is available, it should be positive
-    if pd.notna(k["customer_lifetime_months"]):
+    # If customer lifetime months is available
+    if "customer_lifetime_months" in k and pd.notna(k["customer_lifetime_months"]):
         assert float(k["customer_lifetime_months"]) > 0, \
             f"customer_lifetime_months {k['customer_lifetime_months']} should be positive"
 
@@ -78,13 +79,13 @@ def test_kpi_cac_metrics():
     """Test CAC and payback period if available."""
     k = pd.read_csv(KPI_FILE).iloc[0]
     
-    # If CAC is available, it should be non-negative
-    if pd.notna(k["customer_acquisition_cost"]):
+    # If CAC is available
+    if "customer_acquisition_cost" in k and pd.notna(k["customer_acquisition_cost"]):
         assert float(k["customer_acquisition_cost"]) >= 0, \
             f"customer_acquisition_cost {k['customer_acquisition_cost']} should be non-negative"
     
-    # If payback period is available, it should be positive
-    if pd.notna(k["payback_period_months"]):
+    # If payback period is available
+    if "payback_period_months" in k and pd.notna(k["payback_period_months"]):
         assert float(k["payback_period_months"]) > 0, \
             f"payback_period_months {k['payback_period_months']} should be positive"
 

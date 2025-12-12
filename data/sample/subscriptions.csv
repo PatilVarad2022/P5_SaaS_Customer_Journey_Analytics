@@ -1,0 +1,2 @@
+subscription_id,customer_id,start_date,end_date,status,price
+S1,C1,2024-01-10,,active,100

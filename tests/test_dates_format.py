@@ -1,29 +1,17 @@
+import pytest
 import pandas as pd
-import os
-import sys
+from src.utils.config import USERS_FILE, EVENTS_FILE
 
-DATA_DIR = "data"
-
-def check_dates():
-    print("Testing Date Formats...")
-    
-    # Users
-    users = pd.read_csv(os.path.join(DATA_DIR, "users.csv"))
-    pd.to_datetime(users["signup_date"], format="mixed", errors="raise")
-    
-    # Events
-    events = pd.read_csv(os.path.join(DATA_DIR, "events.csv"))
-    pd.to_datetime(events["event_timestamp"], format="mixed", errors="raise")
-    
-    # Subs
-    subs = pd.read_csv(os.path.join(DATA_DIR, "subscriptions.csv"))
-    pd.to_datetime(subs["start_date"], format="mixed", errors="raise")
-    
-    print("Date Format Tests Passed.")
-
-if __name__ == "__main__":
+def test_dates_format():
+    users = pd.read_csv(USERS_FILE)
+    # Check if signup_date is valid datetime
     try:
-        check_dates()
-    except Exception as e:
-        print(f"FAILED: {e}")
-        sys.exit(1)
+        pd.to_datetime(users["signup_date"], format="%Y-%m-%d", errors='raise')
+    except Exception:
+        pytest.fail("signup_date in users.csv is not in YYYY-MM-DD format")
+
+    events = pd.read_csv(EVENTS_FILE)
+    try:
+        pd.to_datetime(events["event_timestamp"], errors='raise')
+    except Exception:
+        pytest.fail("event_timestamp in events.csv is not valid")

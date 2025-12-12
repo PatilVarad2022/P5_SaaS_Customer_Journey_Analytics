@@ -1,0 +1,13 @@
+{
+  "acquisition": 2000,
+  "activation": 1213,
+  "retention": 302,
+  "conversion_rates": {
+    "signup_to_activation": 0.6065,
+    "activation_to_paid": 0.24896949711459193
+  },
+  "drop_off": {
+    "activation_drop_off": 0.39349999999999996,
+    "paid_drop_off": 0.7510305028854081
+  }
+}
