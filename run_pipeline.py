@@ -42,7 +42,7 @@ def main():
     segments_df.to_csv(SEGMENTS_FILE, index=False)
     
     # 5. KPIs
-    kpis = calculate_kpis(users, events, journey_df)
+    kpis = calculate_kpis(users, events, segments_df)
     with open(METRICS_FILE, "w") as f:
         json.dump(kpis, f, indent=2)
     pd.DataFrame([kpis]).to_csv(KPI_SUMMARY_FILE, index=False)
