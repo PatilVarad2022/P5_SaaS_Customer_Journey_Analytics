@@ -65,7 +65,7 @@ README.md
 requirements.txt
 ```
 
-All datasets are synthetic and follow SaaS industry conventions.
+Datasets are programmatically generated to demonstrate realistic SaaS customer behavior patterns and industry-standard data structures.
 
 ---
 
@@ -99,14 +99,14 @@ Outputs will appear in `/outputs/` and `/outputs/tableau_ready/`.
 
 ---
 
-## ⚡ 4. How to Reproduce Demo
+## ⚡ 4. Quick Start
 
-A set of pre-calculated demo outputs is available in the `demo_sample/` folder for immediate inspection:
-- `demo_sample/kpi_summary.csv`
-- `demo_sample/cohort_retention_matrix.csv`
-- `demo_sample/kpi_summary.png`
+Pre-computed sample outputs are available in `demo_sample/` for immediate evaluation:
+- `demo_sample/kpi_summary.csv` — Example KPI metrics
+- `demo_sample/cohort_retention_matrix.csv` — Sample cohort analysis
+- `demo_sample/kpi_summary.png` — Visual output example
 
-To regenerate these yourself, simply run the pipeline commands above.
+Run the pipeline commands above to generate fresh outputs from the full dataset.
 
 ## ✅ 5. Verifiable Claims & Integrity
 
@@ -134,7 +134,7 @@ The analytics pipeline generates comprehensive, analysis-ready metrics:
 - CAC (Customer Acquisition Cost)*
 - Payback Period*
 
-*CAC and Payback Period are computed when `data/marketing_costs.csv` is provided. See `docs/data_dictionary.md` for schema.
+*Extensible: Add `data/marketing_costs.csv` to enable CAC and payback period calculations. Schema documented in `docs/data_dictionary.md`.
 
 **`cohort_retention_matrix.csv`** — Cohort analysis
 - Monthly cohort survival rates
