@@ -1,5 +1,0 @@
-Generated on 2025-12-11 00:21:38.616567
-Users: 10000
-Events: 278442
-Subscriptions: 10819
-Support Tickets: 970
